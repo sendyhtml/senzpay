@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
     loadUserData();
     updateGreeting();
-    handleRouting();
     
     // toggle saldo
     const toggleBtn = document.getElementById('toggleSaldo');
@@ -31,39 +30,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// routing handler - menghilangkan .html dari URL
-function handleRouting() {
-    // Ambil semua link/button yang pindah halaman
-    const navItems = document.querySelectorAll('[onclick*="window.location.href"]');
-    
-    navItems.forEach(item => {
-        const onclickAttr = item.getAttribute('onclick');
-        if (onclickAttr && onclickAttr.includes('.html')) {
-            // Ubah onclick attribute
-            const newOnclick = onclickAttr.replace('.html', '');
-            item.setAttribute('onclick', newOnclick);
-        }
-    });
-    
-    // Update current page di URL jika perlu
-    const path = window.location.pathname;
-    if (path.endsWith('.html')) {
-        const newPath = path.slice(0, -5); // hapus .html
-        window.history.replaceState(null, '', newPath);
-    }
-}
-
 // auth check
 function checkAuth() {
     const isLoggedIn = localStorage.getItem('zenzpay_auth');
-    const currentPath = window.location.pathname;
-    const currentPage = currentPath.split('/').pop() || '';
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     
-    // Cek apakah ini halaman login
-    const isLoginPage = currentPage === 'login' || currentPage === '';
-    
-    if (isLoggedIn !== 'true' && !isLoginPage) {
-        window.location.href = '/login';
+    if (isLoggedIn !== 'true' && !currentPage.includes('login')) {
+        window.location.href = 'login.html';
     }
     
     if (isLoggedIn === 'true') {
@@ -106,14 +79,12 @@ function loadUserData() {
     const qrisEl = document.getElementById('qrisValue');
     const profileEl = document.getElementById('profileName');
     const qrisDetail = document.getElementById('qrisDetail');
-    const availableSpan = document.getElementById('availableBalance');
     
     if (nameEl) nameEl.textContent = currentUser.username;
     if (akunEl) akunEl.textContent = formatRupiah(currentUser.saldoAkun);
     if (qrisEl) qrisEl.textContent = formatRupiah(currentUser.saldoQris);
     if (profileEl) profileEl.textContent = currentUser.username;
     if (qrisDetail) qrisDetail.textContent = `Rp ${formatRupiah(currentUser.saldoQris)}`;
-    if (availableSpan) availableSpan.textContent = formatRupiah(currentUser.saldoAkun);
 }
 
 // format rupiah
@@ -153,7 +124,7 @@ function handleLogin() {
     if (user) {
         localStorage.setItem('zenzpay_auth', 'true');
         localStorage.setItem('zenzpay_user', username);
-        window.location.href = '/index';
+        window.location.href = 'index.html';
     } else {
         alert('username/password salah');
     }
@@ -317,7 +288,7 @@ function processWithdraw() {
     currentUser = users[userIndex];
     
     alert(`permintaan withdraw Rp ${formatRupiah(amount)} diproses`);
-    window.location.href = '/index';
+    window.location.href = 'index.html';
 }
 
 // load riwayat
@@ -374,10 +345,5 @@ function filterRiwayat(tipe) {
 function logout() {
     localStorage.removeItem('zenzpay_auth');
     localStorage.removeItem('zenzpay_user');
-    window.location.href = '/login';
-}
-
-// Helper function untuk navigasi (bisa dipanggil dari HTML)
-function navigateTo(page) {
-    window.location.href = `/${page}`;
+    window.location.href = 'login.html';
 }

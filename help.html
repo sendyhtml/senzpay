@@ -3,49 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SenzPay - Bantuan</title>
+    <title>zenzpay | bantuan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header-with-back">
-            <button class="back-btn" onclick="window.location.href='index.html'">
+    <div class="app">
+        <div class="header-nav">
+            <button class="back-btn" onclick="window.location.href='/index'">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h2>BANTUAN</h2>
+            <h1>bantuan</h1>
         </div>
 
-        <div class="help-content">
-            <div class="help-card">
-                <h3>Hubungi Admin</h3>
-                <a href="https://t.me/sendyhosting?text=hai+saya+ada+masalah+pada+payment+senzpay" target="_blank" class="help-link">
+        <div class="help-list">
+            <a href="https://t.me/sendyhosting?text=hai+saya+ada+masalah+pada+payment+senzpay" target="_blank" class="help-item">
+                <div class="help-icon">
                     <i class="fab fa-telegram"></i>
-                    KLIK
-                </a>
-            </div>
+                </div>
+                <div class="help-content">
+                    <h3>hubungi admin</h3>
+                    <p>@sendyhosting</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </a>
 
-            <div class="help-card">
-                <h3>Channel Admin</h3>
-                <a href="https://t.me/SendyOFC" target="_blank" class="help-link">
+            <a href="https://t.me/SendyOFC" target="_blank" class="help-item">
+                <div class="help-icon">
                     <i class="fab fa-telegram"></i>
-                    KLIK
-                </a>
-            </div>
+                </div>
+                <div class="help-content">
+                    <h3>channel admin</h3>
+                    <p>@SendyOFC</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </a>
         </div>
 
         <nav class="bottom-nav">
-            <button class="nav-item" onclick="window.location.href='index.html'">
+            <button class="nav-item" onclick="window.location.href='/index'">
                 <i class="fas fa-home"></i>
-                <span>Home</span>
+                <span>home</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='profile.html'">
+            <button class="nav-item" onclick="window.location.href='/profile'">
                 <i class="fas fa-user"></i>
-                <span>Profile</span>
+                <span>profile</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='riwayat.html'">
+            <button class="nav-item" onclick="window.location.href='/riwayat'">
                 <i class="fas fa-history"></i>
-                <span>Riwayat</span>
+                <span>riwayat</span>
             </button>
         </nav>
     </div>

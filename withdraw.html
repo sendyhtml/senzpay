@@ -3,59 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SenzPay - Withdraw</title>
+    <title>zenzpay | withdraw</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header-with-back">
-            <button class="back-btn" onclick="window.location.href='index.html'">
+    <div class="app">
+        <div class="header-nav">
+            <button class="back-btn" onclick="window.location.href='/index'">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h2>Withdraw</h2>
+            <h1>withdraw</h1>
         </div>
 
-        <div class="withdraw-content">
+        <div class="withdraw-form">
             <div class="form-group">
-                <label>Pilih Metode Penarikan</label>
-                <select id="withdrawMethod" class="form-input">
-                    <option value="bank_bca">Bank BCA</option>
-                    <option value="bank_mandiri">Bank Mandiri</option>
-                    <option value="bank_bri">Bank BRI</option>
-                    <option value="bank_bni">Bank BNI</option>
-                    <option value="ovo">OVO</option>
-                    <option value="dana">DANA</option>
-                    <option value="gopay">GoPay</option>
-                    <option value="linkaja">LinkAja</option>
+                <label>metode</label>
+                <select id="withdrawMethod" class="form-select">
+                    <option value="bca">🏦 BCA</option>
+                    <option value="mandiri">🏦 Mandiri</option>
+                    <option value="bri">🏦 BRI</option>
+                    <option value="bni">🏦 BNI</option>
+                    <option value="ovo">📱 OVO</option>
+                    <option value="dana">📱 DANA</option>
+                    <option value="gopay">📱 GoPay</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Nomor Rekening / E-Wallet</label>
-                <input type="text" id="accountNumber" class="form-input" placeholder="Masukkan nomor tujuan">
+                <label>nomor tujuan</label>
+                <input type="text" id="accountNumber" class="form-input" placeholder="contoh: 1234567890">
             </div>
 
             <div class="form-group">
-                <label>Jumlah Penarikan</label>
-                <input type="number" id="withdrawAmount" class="form-input" placeholder="Masukkan nominal">
+                <label>nominal</label>
+                <input type="number" id="withdrawAmount" class="form-input" placeholder="minimal Rp 50.000">
             </div>
 
-            <button class="btn-withdraw" onclick="processWithdraw()">TARIK</button>
+            <div class="form-info">
+                <p>saldo tersedia: <span id="availableBalance">Rp 0</span></p>
+            </div>
+
+            <button class="withdraw-submit" onclick="processWithdraw()">
+                tarik dana
+            </button>
         </div>
 
         <nav class="bottom-nav">
-            <button class="nav-item" onclick="window.location.href='index.html'">
+            <button class="nav-item" onclick="window.location.href='/index'">
                 <i class="fas fa-home"></i>
-                <span>Home</span>
+                <span>home</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='profile.html'">
+            <button class="nav-item" onclick="window.location.href='/profile'">
                 <i class="fas fa-user"></i>
-                <span>Profile</span>
+                <span>profile</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='riwayat.html'">
+            <button class="nav-item" onclick="window.location.href='/riwayat'">
                 <i class="fas fa-history"></i>
-                <span>Riwayat</span>
+                <span>riwayat</span>
             </button>
         </nav>
     </div>

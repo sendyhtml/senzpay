@@ -3,56 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SenzPay - Dashboard</title>
+    <title>zenzpay | dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header dengan sapaan -->
-        <div class="header-blue">
+    <div class="app">
+        <!-- header dengan sapaan -->
+        <div class="header">
             <div class="greeting">
-                Selamat <span id="greetingTime">Pagi</span>, <span id="userName">Loading...</span>
+                <span class="greeting-time" id="greetingTime">PAGI</span>
+                <span class="greeting-user" id="userName">Loading...</span>
             </div>
         </div>
 
-        <!-- Kartu Saldo -->
-        <div class="balance-cards">
-            <div class="balance-card">
-                <div class="balance-header">
-                    <span>Saldo Akun</span>
-                    <button class="toggle-balance" id="toggleSaldo"><i class="fas fa-eye"></i></button>
+        <!-- cards saldo -->
+        <div class="cards">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-label">saldo akun</span>
+                    <button class="toggle-btn" id="toggleSaldo">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
-                <div class="balance-amount" id="saldoAkun">Rp <span class="hidden-balance">0</span></div>
-            </div>
-            <div class="balance-card">
-                <div class="balance-header">
-                    <span>Saldo QRIS</span>
+                <div class="card-value" id="saldoAkun">
+                    <span class="currency">Rp</span>
+                    <span class="value hidden" id="akunValue">0</span>
                 </div>
-                <div class="balance-amount" id="saldoQris">Rp <span class="hidden-balance">0</span></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-label">saldo qris</span>
+                </div>
+                <div class="card-value" id="saldoQris">
+                    <span class="currency">Rp</span>
+                    <span class="value hidden" id="qrisValue">0</span>
+                </div>
             </div>
         </div>
 
-        <!-- Tombol Aksi -->
-        <div class="action-buttons">
-            <button class="btn-action" onclick="window.location.href='withdraw.html'">Withdraw</button>
-            <button class="btn-action" onclick="window.location.href='help.html'">Bantuan</button>
-            <button class="btn-action" onclick="window.location.href='qris.html'">QRIS</button>
+        <!-- action buttons -->
+        <div class="actions">
+            <button class="btn" onclick="window.location.href='/withdraw'">
+                <i class="fas fa-arrow-up"></i>
+                withdraw
+            </button>
+            <button class="btn" onclick="window.location.href='/help'">
+                <i class="fas fa-question"></i>
+                bantuan
+            </button>
+            <button class="btn primary" onclick="window.location.href='/qris'">
+                <i class="fas fa-qrcode"></i>
+                qris
+            </button>
         </div>
 
-        <!-- Navigasi Bawah -->
+        <!-- bottom navigation -->
         <nav class="bottom-nav">
-            <button class="nav-item active" onclick="window.location.href='index.html'">
+            <button class="nav-item active" onclick="window.location.href='/index'">
                 <i class="fas fa-home"></i>
-                <span>Home</span>
+                <span>home</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='profile.html'">
+            <button class="nav-item" onclick="window.location.href='/profile'">
                 <i class="fas fa-user"></i>
-                <span>Profile</span>
+                <span>profile</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='riwayat.html'">
+            <button class="nav-item" onclick="window.location.href='/riwayat'">
                 <i class="fas fa-history"></i>
-                <span>Riwayat</span>
+                <span>riwayat</span>
             </button>
         </nav>
     </div>

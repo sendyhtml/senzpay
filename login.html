@@ -3,32 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SenzPay - Login</title>
+    <title>zenzpay | login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="auth-body">
     <div class="auth-container">
         <div class="auth-box">
-            <h1 class="auth-title">SenzPAY</h1>
+            <h1 class="auth-logo">zenzpay</h1>
             
-            <!-- Form Login -->
-            <div id="loginForm" class="auth-form active">
-                <h2>LOGIN</h2>
-                <input type="text" id="loginUsername" placeholder="Username" class="auth-input">
-                <input type="password" id="loginPassword" placeholder="Password" class="auth-input">
-                <button class="auth-btn" onclick="handleLogin()">LOGIN</button>
-                <p class="auth-link">Belum punya akun? <a href="#" onclick="showRegister()">Daftar</a></p>
+            <!-- login form -->
+            <div class="auth-form active" id="loginForm">
+                <h2># login</h2>
+                <div class="input-group">
+                    <input type="text" id="loginUsername" placeholder="username" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPassword" placeholder="password">
+                </div>
+                <button class="auth-submit" onclick="handleLogin()">login</button>
+                <p class="auth-switch">
+                    belum punya akun? <a href="#" onclick="showRegister()">daftar</a>
+                </p>
             </div>
 
-            <!-- Form Register -->
-            <div id="registerForm" class="auth-form">
-                <h2>DAFTAR</h2>
-                <input type="text" id="regUsername" placeholder="Username" class="auth-input">
-                <input type="password" id="regPassword" placeholder="Password" class="auth-input">
-                <input type="password" id="regConfirmPassword" placeholder="Masukan Password kembali" class="auth-input">
-                <button class="auth-btn" onclick="handleRegister()">DAFTARKAN</button>
-                <p class="auth-link">Sudah punya akun? <a href="#" onclick="showLogin()">Login</a></p>
+            <!-- register form -->
+            <div class="auth-form" id="registerForm">
+                <h2># daftar</h2>
+                <div class="input-group">
+                    <input type="text" id="regUsername" placeholder="username" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regPassword" placeholder="password">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regConfirmPassword" placeholder="konfirmasi password">
+                </div>
+                <button class="auth-submit" onclick="handleRegister()">daftarkan</button>
+                <p class="auth-switch">
+                    sudah punya akun? <a href="#" onclick="showLogin()">login</a>
+                </p>
             </div>
         </div>
     </div>

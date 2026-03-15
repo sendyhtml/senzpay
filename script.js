@@ -1,364 +1,383 @@
-// Cek status login
-function checkAuth() {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const currentPage = window.location.pathname.split('/').pop();
-    
-    if (isLoggedIn !== 'true' && currentPage !== 'login.html' && currentPage !== '') {
-        window.location.href = 'login.html';
-    }
-}
+// data store
+let currentUser = null;
 
-// Data user default
-const defaultUser = {
-    username: 'demo',
-    password: 'demo123',
-    saldoAkun: 250000,
-    saldoQris: 100000,
-    riwayat: [
-        { deskripsi: 'Saldo QRIS Masuk', nominal: 50000, tipe: 'masuk', tanggal: new Date().toLocaleString() },
-        { deskripsi: 'Penarikan Saldo', nominal: 25000, tipe: 'keluar', tanggal: new Date().toLocaleString() }
-    ]
-};
-
-// Inisialisasi data jika belum ada
-if (!localStorage.getItem('users')) {
-    localStorage.setItem('users', JSON.stringify([defaultUser]));
-}
-
-// Format waktu sapaan
-function updateGreeting() {
-    const greetingElement = document.getElementById('greetingTime');
-    if (greetingElement) {
-        const hour = new Date().getHours();
-        let greeting = 'Pagi';
-        if (hour >= 15) greeting = 'Sore';
-        else if (hour >= 11) greeting = 'Siang';
-        else if (hour >= 18) greeting = 'Malam';
-        greetingElement.textContent = greeting;
-    }
-}
-
-// Toggle saldo
-let saldoVisible = true;
+// init
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
-    updateGreeting();
     loadUserData();
-    loadRiwayat();
+    updateGreeting();
+    handleRouting();
     
+    // toggle saldo
     const toggleBtn = document.getElementById('toggleSaldo');
     if (toggleBtn) {
-        toggleBtn.addEventListener('click', function() {
-            const hiddenElements = document.querySelectorAll('.hidden-balance');
-            saldoVisible = !saldoVisible;
-            this.innerHTML = saldoVisible ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            hiddenElements.forEach(el => {
-                el.style.filter = saldoVisible ? 'none' : 'blur(5px)';
-            });
-        });
+        toggleBtn.addEventListener('click', toggleSaldo);
     }
     
-    // Event listener untuk QRIS buttons
-    const btnQrisAjaib = document.getElementById('btnQrisAjaib');
-    const btnMutasi = document.getElementById('btnMutasi');
-    const btnCairkan = document.getElementById('btnCairkan');
-    
-    if (btnQrisAjaib) {
-        btnQrisAjaib.addEventListener('click', function() {
-            document.getElementById('confirmModal').classList.add('show');
+    // filter riwayat
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterRiwayat(this.dataset.filter);
         });
-    }
+    });
     
-    if (btnMutasi) {
-        btnMutasi.addEventListener('click', function() {
-            // Simulasi mutasi otomatis
-            const amount = 50000;
-            processMutasi(amount);
-        });
-    }
-    
-    if (btnCairkan) {
-        btnCairkan.addEventListener('click', function() {
-            processCairkan();
-        });
+    // load available balance di withdraw
+    const availableSpan = document.getElementById('availableBalance');
+    if (availableSpan && currentUser) {
+        availableSpan.textContent = formatRupiah(currentUser.saldoAkun);
     }
 });
 
-// Load data user
+// routing handler - menghilangkan .html dari URL
+function handleRouting() {
+    // Ambil semua link/button yang pindah halaman
+    const navItems = document.querySelectorAll('[onclick*="window.location.href"]');
+    
+    navItems.forEach(item => {
+        const onclickAttr = item.getAttribute('onclick');
+        if (onclickAttr && onclickAttr.includes('.html')) {
+            // Ubah onclick attribute
+            const newOnclick = onclickAttr.replace('.html', '');
+            item.setAttribute('onclick', newOnclick);
+        }
+    });
+    
+    // Update current page di URL jika perlu
+    const path = window.location.pathname;
+    if (path.endsWith('.html')) {
+        const newPath = path.slice(0, -5); // hapus .html
+        window.history.replaceState(null, '', newPath);
+    }
+}
+
+// auth check
+function checkAuth() {
+    const isLoggedIn = localStorage.getItem('zenzpay_auth');
+    const currentPath = window.location.pathname;
+    const currentPage = currentPath.split('/').pop() || '';
+    
+    // Cek apakah ini halaman login
+    const isLoginPage = currentPage === 'login' || currentPage === '';
+    
+    if (isLoggedIn !== 'true' && !isLoginPage) {
+        window.location.href = '/login';
+    }
+    
+    if (isLoggedIn === 'true') {
+        loadCurrentUser();
+    }
+}
+
+// load current user
+function loadCurrentUser() {
+    const users = JSON.parse(localStorage.getItem('zenzpay_users')) || [];
+    const username = localStorage.getItem('zenzpay_user');
+    currentUser = users.find(u => u.username === username);
+    
+    if (!currentUser && users.length > 0) {
+        currentUser = users[0];
+        localStorage.setItem('zenzpay_user', currentUser.username);
+    }
+}
+
+// update greeting
+function updateGreeting() {
+    const greetingEl = document.getElementById('greetingTime');
+    if (!greetingEl) return;
+    
+    const hour = new Date().getHours();
+    let text = 'PAGI';
+    if (hour >= 11 && hour < 15) text = 'SIANG';
+    else if (hour >= 15 && hour < 18) text = 'SORE';
+    else if (hour >= 18 || hour < 4) text = 'MALAM';
+    
+    greetingEl.textContent = text;
+}
+
+// load user data to UI
 function loadUserData() {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const currentUser = users[0]; // Untuk demo, ambil user pertama
+    if (!currentUser) return;
     
-    const userNameElement = document.getElementById('userName');
-    const saldoAkunElement = document.getElementById('saldoAkun');
-    const saldoQrisElement = document.getElementById('saldoQris');
-    const saldoQrisDetail = document.getElementById('saldoQrisDetail');
-    const profileUsername = document.getElementById('profileUsername');
+    const nameEl = document.getElementById('userName');
+    const akunEl = document.getElementById('akunValue');
+    const qrisEl = document.getElementById('qrisValue');
+    const profileEl = document.getElementById('profileName');
+    const qrisDetail = document.getElementById('qrisDetail');
+    const availableSpan = document.getElementById('availableBalance');
     
-    if (userNameElement) userNameElement.textContent = currentUser.username;
-    if (saldoAkunElement) saldoAkunElement.innerHTML = `Rp <span class="hidden-balance">${formatRupiah(currentUser.saldoAkun)}</span>`;
-    if (saldoQrisElement) saldoQrisElement.innerHTML = `Rp <span class="hidden-balance">${formatRupiah(currentUser.saldoQris)}</span>`;
-    if (saldoQrisDetail) saldoQrisDetail.textContent = `Rp ${formatRupiah(currentUser.saldoQris)}`;
-    if (profileUsername) profileUsername.value = currentUser.username;
+    if (nameEl) nameEl.textContent = currentUser.username;
+    if (akunEl) akunEl.textContent = formatRupiah(currentUser.saldoAkun);
+    if (qrisEl) qrisEl.textContent = formatRupiah(currentUser.saldoQris);
+    if (profileEl) profileEl.textContent = currentUser.username;
+    if (qrisDetail) qrisDetail.textContent = `Rp ${formatRupiah(currentUser.saldoQris)}`;
+    if (availableSpan) availableSpan.textContent = formatRupiah(currentUser.saldoAkun);
 }
 
-// Format rupiah
+// format rupiah
 function formatRupiah(angka) {
-    return new Intl.NumberFormat('id-ID').format(angka);
+    return new Intl.NumberFormat('id-ID').format(angka || 0);
 }
 
-// Handle Login
+// toggle saldo visibility
+function toggleSaldo() {
+    const hiddenElements = document.querySelectorAll('.value.hidden');
+    const icon = document.querySelector('#toggleSaldo i');
+    
+    hiddenElements.forEach(el => {
+        el.classList.toggle('hidden');
+    });
+    
+    if (icon) {
+        icon.className = hiddenElements[0]?.classList.contains('hidden') 
+            ? 'fas fa-eye-slash' 
+            : 'fas fa-eye';
+    }
+}
+
+// handle login
 function handleLogin() {
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
-    const users = JSON.parse(localStorage.getItem('users')) || [];
     
+    if (!username || !password) {
+        alert('isi semua field');
+        return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('zenzpay_users')) || [];
     const user = users.find(u => u.username === username && u.password === password);
     
     if (user) {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('currentUser', username);
-        window.location.href = 'index.html';
+        localStorage.setItem('zenzpay_auth', 'true');
+        localStorage.setItem('zenzpay_user', username);
+        window.location.href = '/index';
     } else {
-        alert('Username atau password salah!');
+        alert('username/password salah');
     }
 }
 
-// Handle Register
+// handle register
 function handleRegister() {
     const username = document.getElementById('regUsername').value;
     const password = document.getElementById('regPassword').value;
-    const confirmPassword = document.getElementById('regConfirmPassword').value;
+    const confirm = document.getElementById('regConfirmPassword').value;
     
-    if (!username || !password || !confirmPassword) {
-        alert('Semua field harus diisi!');
+    if (!username || !password || !confirm) {
+        alert('isi semua field');
         return;
     }
     
-    if (password !== confirmPassword) {
-        alert('Password tidak cocok!');
+    if (password !== confirm) {
+        alert('password tidak cocok');
         return;
     }
     
-    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const users = JSON.parse(localStorage.getItem('zenzpay_users')) || [];
     
     if (users.find(u => u.username === username)) {
-        alert('Username sudah digunakan!');
+        alert('username sudah digunakan');
         return;
     }
     
     const newUser = {
-        username: username,
-        password: password,
-        saldoAkun: 0,
-        saldoQris: 0,
-        riwayat: []
+        username,
+        password,
+        saldoAkun: 250000,
+        saldoQris: 100000,
+        riwayat: [
+            {
+                id: Date.now(),
+                deskripsi: 'saldo awal',
+                nominal: 250000,
+                tipe: 'masuk',
+                tanggal: new Date().toISOString()
+            }
+        ]
     };
     
     users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    alert('Pendaftaran berhasil! Silakan login.');
+    localStorage.setItem('zenzpay_users', JSON.stringify(users));
+    alert('registrasi berhasil');
     showLogin();
 }
 
-// Toggle form login/register
-function showRegister() {
-    document.getElementById('loginForm').classList.remove('active');
-    document.getElementById('registerForm').classList.add('active');
-}
-
+// show login form
 function showLogin() {
-    document.getElementById('registerForm').classList.remove('active');
-    document.getElementById('loginForm').classList.add('active');
+    document.getElementById('registerForm')?.classList.remove('active');
+    document.getElementById('loginForm')?.classList.add('active');
 }
 
-// Close modal
-function closeModal() {
-    document.getElementById('confirmModal').classList.remove('show');
+// show register form
+function showRegister() {
+    document.getElementById('loginForm')?.classList.remove('active');
+    document.getElementById('registerForm')?.classList.add('active');
 }
 
-// Confirm transfer untuk QRIS AJAIB
-function confirmTransfer() {
-    const bukti = document.getElementById('buktiTransfer').files[0];
-    if (!bukti) {
-        alert('Harap upload bukti transfer!');
+// update username
+function updateUsername() {
+    const newUsername = document.getElementById('newUsername').value;
+    
+    if (!newUsername) {
+        alert('masukkan username baru');
         return;
     }
     
-    // Simulasi proses
-    alert('Bukti transfer diterima, sedang diproses...');
-    closeModal();
+    const users = JSON.parse(localStorage.getItem('zenzpay_users')) || [];
+    const userIndex = users.findIndex(u => u.username === currentUser.username);
     
-    // Update saldo setelah konfirmasi
-    setTimeout(() => {
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const currentUser = users[0];
-        const amount = 50000;
-        
-        currentUser.saldoQris += amount;
-        currentUser.riwayat.push({
-            deskripsi: 'Saldo QRIS Masuk (QRIS AJAIB)',
-            nominal: amount,
-            tipe: 'masuk',
-            tanggal: new Date().toLocaleString()
-        });
-        
-        localStorage.setItem('users', JSON.stringify(users));
-        loadUserData();
-        alert('Saldo QRIS berhasil ditambahkan!');
-    }, 2000);
-}
-
-// Proses mutasi QRIS (otomatis masuk)
-function processMutasi(amount) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const currentUser = users[0];
-    
-    currentUser.saldoQris += amount;
-    currentUser.riwayat.push({
-        deskripsi: 'Saldo QRIS Masuk (Mutasi)',
-        nominal: amount,
-        tipe: 'masuk',
-        tanggal: new Date().toLocaleString()
-    });
-    
-    localStorage.setItem('users', JSON.stringify(users));
-    loadUserData();
-    alert(`Mutasi berhasil! Saldo QRIS bertambah Rp ${formatRupiah(amount)}`);
-}
-
-// Proses cairkan saldo QRIS ke akun
-function processCairkan() {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const currentUser = users[0];
-    
-    if (currentUser.saldoQris <= 0) {
-        alert('Saldo QRIS kosong!');
+    if (users.find(u => u.username === newUsername)) {
+        alert('username sudah digunakan');
         return;
     }
     
-    const amount = currentUser.saldoQris;
-    currentUser.saldoAkun += amount;
-    currentUser.saldoQris = 0;
+    users[userIndex].username = newUsername;
+    localStorage.setItem('zenzpay_users', JSON.stringify(users));
+    localStorage.setItem('zenzpay_user', newUsername);
     
-    currentUser.riwayat.push({
-        deskripsi: 'Pencairan Saldo QRIS',
-        nominal: amount,
-        tipe: 'masuk',
-        tanggal: new Date().toLocaleString()
-    });
-    
-    localStorage.setItem('users', JSON.stringify(users));
+    currentUser.username = newUsername;
     loadUserData();
-    alert(`Saldo QRIS berhasil dicairkan ke akun sebesar Rp ${formatRupiah(amount)}`);
+    
+    document.getElementById('newUsername').value = '';
+    alert('username berhasil diubah');
 }
 
-// Proses withdraw
+// update password
+function updatePassword() {
+    const current = document.getElementById('currentPassword')?.value;
+    const newPass = document.getElementById('newPassword')?.value;
+    const confirm = document.getElementById('confirmPassword')?.value;
+    
+    if (!current || !newPass || !confirm) {
+        alert('isi semua field');
+        return;
+    }
+    
+    if (current !== currentUser.password) {
+        alert('password saat ini salah');
+        return;
+    }
+    
+    if (newPass !== confirm) {
+        alert('password baru tidak cocok');
+        return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('zenzpay_users')) || [];
+    const userIndex = users.findIndex(u => u.username === currentUser.username);
+    
+    users[userIndex].password = newPass;
+    localStorage.setItem('zenzpay_users', JSON.stringify(users));
+    
+    currentUser.password = newPass;
+    
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    
+    alert('password berhasil diubah');
+}
+
+// process withdraw
 function processWithdraw() {
     const method = document.getElementById('withdrawMethod').value;
-    const accountNumber = document.getElementById('accountNumber').value;
+    const account = document.getElementById('accountNumber').value;
     const amount = parseInt(document.getElementById('withdrawAmount').value);
     
-    if (!accountNumber || !amount) {
-        alert('Semua field harus diisi!');
+    if (!account || !amount) {
+        alert('isi semua field');
         return;
     }
     
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const currentUser = users[0];
+    if (amount < 50000) {
+        alert('minimal withdraw Rp 50.000');
+        return;
+    }
     
     if (amount > currentUser.saldoAkun) {
-        alert('Saldo tidak mencukupi!');
+        alert('saldo tidak mencukupi');
         return;
     }
     
-    currentUser.saldoAkun -= amount;
-    currentUser.riwayat.push({
-        deskripsi: `Penarikan ke ${method}`,
+    const users = JSON.parse(localStorage.getItem('zenzpay_users')) || [];
+    const userIndex = users.findIndex(u => u.username === currentUser.username);
+    
+    users[userIndex].saldoAkun -= amount;
+    users[userIndex].riwayat.push({
+        id: Date.now(),
+        deskripsi: `withdraw ke ${method}`,
         nominal: amount,
         tipe: 'keluar',
-        tanggal: new Date().toLocaleString()
+        tanggal: new Date().toISOString()
     });
     
-    localStorage.setItem('users', JSON.stringify(users));
-    loadUserData();
-    alert(`Permintaan penarikan Rp ${formatRupiah(amount)} sedang diproses`);
-    window.location.href = 'index.html';
+    localStorage.setItem('zenzpay_users', JSON.stringify(users));
+    currentUser = users[userIndex];
+    
+    alert(`permintaan withdraw Rp ${formatRupiah(amount)} diproses`);
+    window.location.href = '/index';
 }
 
-// Load riwayat
+// load riwayat
 function loadRiwayat() {
-    const riwayatList = document.getElementById('riwayatList');
-    if (!riwayatList) return;
+    const listEl = document.getElementById('riwayatList');
+    if (!listEl || !currentUser) return;
     
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const currentUser = users[0];
-    
-    if (currentUser.riwayat.length === 0) {
-        riwayatList.innerHTML = '<p style="text-align: center; color: #999; padding: 50px;">Belum ada riwayat</p>';
+    if (!currentUser.riwayat || currentUser.riwayat.length === 0) {
+        listEl.innerHTML = '<div class="empty-state">belum ada riwayat</div>';
         return;
     }
     
     let html = '';
-    currentUser.riwayat.reverse().forEach(item => {
+    currentUser.riwayat.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+    
+    currentUser.riwayat.forEach(item => {
+        const tanggal = new Date(item.tanggal).toLocaleString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
         html += `
-            <div class="riwayat-item">
-                <div class="info">
+            <div class="riwayat-item" data-tipe="${item.tipe}">
+                <div class="riwayat-info">
                     <h4>${item.deskripsi}</h4>
-                    <p>${item.tanggal}</p>
+                    <p>${tanggal}</p>
                 </div>
-                <div class="amount ${item.tipe === 'keluar' ? 'negative' : ''}">
-                    ${item.tipe === 'keluar' ? '-' : '+'} Rp ${formatRupiah(item.nominal)}
+                <div class="riwayat-nominal ${item.tipe}">
+                    ${item.tipe === 'masuk' ? '+' : '-'} Rp ${formatRupiah(item.nominal)}
                 </div>
             </div>
         `;
     });
     
-    riwayatList.innerHTML = html;
+    listEl.innerHTML = html;
 }
 
-// Update username
-function updateUsername() {
-    const newUsername = document.getElementById('profileUsername').value;
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const currentUser = users[0];
+// filter riwayat
+function filterRiwayat(tipe) {
+    const items = document.querySelectorAll('.riwayat-item');
     
-    if (newUsername && newUsername !== currentUser.username) {
-        currentUser.username = newUsername;
-        localStorage.setItem('users', JSON.stringify(users));
-        alert('Username berhasil diubah!');
-        loadUserData();
-    }
+    items.forEach(item => {
+        if (tipe === 'all' || item.dataset.tipe === tipe) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
 }
 
-// Update password
-function updatePassword() {
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmNewPassword').value;
-    
-    if (!newPassword || !confirmPassword) {
-        alert('Password harus diisi!');
-        return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-        alert('Password tidak cocok!');
-        return;
-    }
-    
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const currentUser = users[0];
-    
-    currentUser.password = newPassword;
-    localStorage.setItem('users', JSON.stringify(users));
-    alert('Password berhasil diubah!');
-    
-    document.getElementById('newPassword').value = '';
-    document.getElementById('confirmNewPassword').value = '';
-}
-
-// Logout
+// logout
 function logout() {
-    localStorage.setItem('isLoggedIn', 'false');
-    window.location.href = 'login.html';
+    localStorage.removeItem('zenzpay_auth');
+    localStorage.removeItem('zenzpay_user');
+    window.location.href = '/login';
+}
+
+// Helper function untuk navigasi (bisa dipanggil dari HTML)
+function navigateTo(page) {
+    window.location.href = `/${page}`;
 }

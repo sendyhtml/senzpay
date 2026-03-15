@@ -3,74 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SenzPay - QRIS Merchant</title>
+    <title>zenzpay | qris merchant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header dengan tombol back -->
-        <div class="header-with-back">
-            <button class="back-btn" onclick="window.location.href='index.html'">
+    <div class="app">
+        <!-- header with back -->
+        <div class="header-nav">
+            <button class="back-btn" onclick="window.location.href='/index'">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h2>QRIS Merchant</h2>
+            <h1>qris merchant</h1>
         </div>
 
-        <!-- Board Saldo QRIS -->
-        <div class="qris-board">
-            <div class="qris-balance-card">
-                <span>Saldo QRIS</span>
-                <h2 id="saldoQrisDetail">Rp 0</h2>
+        <!-- main qris container -->
+        <div class="qris-container">
+            <!-- saldo qris card -->
+            <div class="qris-balance">
+                <span class="balance-label">saldo qris</span>
+                <span class="balance-value" id="qrisDetail">Rp 0</span>
             </div>
 
-            <!-- Tombol Aksi QRIS -->
+            <!-- qris action buttons -->
             <div class="qris-actions">
-                <button class="btn-qris" id="btnQrisAjaib">
-                    <i class="fas fa-magic"></i>
-                    QRIS AJAIB
+                <button class="qris-btn" id="btnAjaib">
+                    <i class="fas fa-bolt"></i>
+                    qris ajaib
                 </button>
-                <button class="btn-qris" id="btnMutasi">
-                    <i class="fas fa-exchange-alt"></i>
-                    MUTASI QRIS
+                <button class="qris-btn" id="btnMutasi">
+                    <i class="fas fa-sync"></i>
+                    mutasi qris
                 </button>
-                <button class="btn-qris" id="btnCairkan">
+                <button class="qris-btn" id="btnCair">
                     <i class="fas fa-wallet"></i>
-                    Cairkan ke Akun
+                    cairkan
                 </button>
             </div>
+        </div>
 
-            <!-- Modal Konfirmasi Transfer -->
-            <div id="confirmModal" class="modal">
-                <div class="modal-content">
-                    <h3>Konfirmasi Transfer</h3>
-                    <p>Upload bukti transfer untuk QRIS AJAIB</p>
-                    <input type="file" id="buktiTransfer" accept="image/*">
-                    <div class="modal-buttons">
-                        <button class="btn-secondary" onclick="closeModal()">Batal</button>
-                        <button class="btn-primary" onclick="confirmTransfer()">Konfirmasi</button>
+        <!-- modal qr code -->
+        <div class="modal" id="qrModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>scan qris</h3>
+                    <button class="modal-close" onclick="closeQRModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="qr-wrapper">
+                        <div id="qrcode"></div>
                     </div>
+                    <div class="qr-info">
+                        <p>bayar menggunakan aplikasi qris</p>
+                        <p class="qr-amount" id="qrAmount">Rp 50.000</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn secondary" onclick="closeQRModal()">tutup</button>
+                    <button class="modal-btn primary" id="confirmPayment">sudah bayar</button>
                 </div>
             </div>
         </div>
 
-        <!-- Navigasi Bawah -->
+        <!-- bottom navigation -->
         <nav class="bottom-nav">
-            <button class="nav-item" onclick="window.location.href='index.html'">
+            <button class="nav-item" onclick="window.location.href='/index'">
                 <i class="fas fa-home"></i>
-                <span>Home</span>
+                <span>home</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='profile.html'">
+            <button class="nav-item" onclick="window.location.href='/profile'">
                 <i class="fas fa-user"></i>
-                <span>Profile</span>
+                <span>profile</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='riwayat.html'">
+            <button class="nav-item" onclick="window.location.href='/riwayat'">
                 <i class="fas fa-history"></i>
-                <span>Riwayat</span>
+                <span>riwayat</span>
             </button>
         </nav>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="script.js"></script>
+    <script src="qris.js"></script>
 </body>
 </html>

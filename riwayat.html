@@ -3,35 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SenzPay - Riwayat</title>
+    <title>zenzpay | riwayat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header-with-back">
-            <button class="back-btn" onclick="window.location.href='index.html'">
+    <div class="app">
+        <div class="header-nav">
+            <button class="back-btn" onclick="window.location.href='/index'">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h2>Riwayat Aktivitas</h2>
+            <h1>riwayat</h1>
+        </div>
+
+        <div class="riwayat-filter">
+            <button class="filter-btn active" data-filter="all">semua</button>
+            <button class="filter-btn" data-filter="masuk">masuk</button>
+            <button class="filter-btn" data-filter="keluar">keluar</button>
         </div>
 
         <div class="riwayat-list" id="riwayatList">
-            <!-- Riwayat akan diisi oleh JavaScript -->
+            <!-- akan diisi javascript -->
         </div>
 
         <nav class="bottom-nav">
-            <button class="nav-item" onclick="window.location.href='index.html'">
+            <button class="nav-item" onclick="window.location.href='/index'">
                 <i class="fas fa-home"></i>
-                <span>Home</span>
+                <span>home</span>
             </button>
-            <button class="nav-item" onclick="window.location.href='profile.html'">
+            <button class="nav-item" onclick="window.location.href='/profile'">
                 <i class="fas fa-user"></i>
-                <span>Profile</span>
+                <span>profile</span>
             </button>
-            <button class="nav-item active" onclick="window.location.href='riwayat.html'">
+            <button class="nav-item active" onclick="window.location.href='/riwayat'">
                 <i class="fas fa-history"></i>
-                <span>Riwayat</span>
+                <span>riwayat</span>
             </button>
         </nav>
     </div>

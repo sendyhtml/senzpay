@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SenzPay - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1 class="auth-title">SenzPAY</h1>
+            
+            <!-- Form Login -->
+            <div id="loginForm" class="auth-form active">
+                <h2>LOGIN</h2>
+                <input type="text" id="loginUsername" placeholder="Username" class="auth-input">
+                <input type="password" id="loginPassword" placeholder="Password" class="auth-input">
+                <button class="auth-btn" onclick="handleLogin()">LOGIN</button>
+                <p class="auth-link">Belum punya akun? <a href="#" onclick="showRegister()">Daftar</a></p>
+            </div>
+
+            <!-- Form Register -->
+            <div id="registerForm" class="auth-form">
+                <h2>DAFTAR</h2>
+                <input type="text" id="regUsername" placeholder="Username" class="auth-input">
+                <input type="password" id="regPassword" placeholder="Password" class="auth-input">
+                <input type="password" id="regConfirmPassword" placeholder="Masukan Password kembali" class="auth-input">
+                <button class="auth-btn" onclick="handleRegister()">DAFTARKAN</button>
+                <p class="auth-link">Sudah punya akun? <a href="#" onclick="showLogin()">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
